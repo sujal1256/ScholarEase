@@ -1,16 +1,72 @@
-# React + Vite
+# ScholarEase — AI Research Intelligence
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Landing page built with **React + Vite + Tailwind CSS + Framer Motion**.
 
-Currently, two official plugins are available:
+## 🚀 Getting Started
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### Prerequisites
+- Node.js 18+
+- npm or yarn
 
-## React Compiler
+### Install & Run
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Install dependencies
+npm install
 
-## Expanding the ESLint configuration
+# Start dev server
+npm run dev
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Build for production
+npm run build
+
+# Preview production build
+npm run preview
+```
+
+## 📁 Project Structure
+
+```
+scholarease/
+├── index.html
+├── vite.config.js
+├── tailwind.config.js
+├── postcss.config.js
+├── package.json
+└── src/
+    ├── main.jsx          # Entry point
+    ├── App.jsx           # Root component
+    ├── index.css         # Global styles + Tailwind
+    └── components/
+        ├── Navbar.jsx        # Sticky nav with mobile menu
+        ├── Hero.jsx          # Hero with floating doc cards
+        ├── Features.jsx      # 6-card features grid
+        ├── HowItWorks.jsx    # 4-step process
+        ├── Collections.jsx   # Library shelf visual
+        ├── Testimonials.jsx  # 3 testimonial cards
+        ├── Pricing.jsx       # 3-tier pricing
+        ├── CTABanner.jsx     # Call-to-action section
+        └── Footer.jsx        # Footer with links
+```
+
+## 📦 Libraries Used
+
+| Library | Purpose |
+|---|---|
+| `react` + `react-dom` | UI framework |
+| `framer-motion` | Scroll animations, fade-ups, transitions |
+| `react-icons` | All icons (Remix Icon set) |
+| `react-scroll` | Smooth scroll nav links |
+| `tailwindcss` | Utility-first styling |
+| `vite` | Build tool |
+
+## 🎨 Design
+
+- **Fonts**: Cormorant Garamond (display) + Syne (UI) + DM Mono (labels)
+- **Palette**: Deep charcoal `#09090d` + Warm amber `#d4913a`
+- **Style**: Dark editorial — academic journal meets modern SaaS
+
+## 🔌 Backend Integration
+
+All CTAs and form interactions are currently placeholder `href="#"`.  
+When your backend is ready, replace those with your API calls / routes.
