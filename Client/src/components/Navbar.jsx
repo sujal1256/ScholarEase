@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-scroll'
 import { RiMenuLine, RiCloseLine } from 'react-icons/ri'
 import { motion, AnimatePresence } from 'framer-motion'
+import SignInModal from './SignInModal'
 
 const navLinks = [
   { label: 'Features', to: 'features' },
@@ -13,6 +14,7 @@ const navLinks = [
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
+  const [signInOpen, setSignInOpen] = useState(false)
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -47,12 +49,13 @@ export default function Navbar() {
 
       {/* Desktop CTA */}
       <div className="hidden md:flex items-center gap-3">
-        <a
-          href="#"
+        <button
+          type="button"
+          onClick={() => setSignInOpen(true)}
           className="text-text-muted text-xs font-semibold tracking-wider uppercase px-4 py-2 border border-white/[0.12] transition-all duration-200 hover:text-text-base hover:border-white/25"
         >
           Sign In
-        </a>
+        </button>
         <a
           href="#"
           className="btn-shimmer bg-amber text-bg text-xs font-bold tracking-wider uppercase px-5 py-2.5 transition-all duration-200 hover:bg-amber-lt hover:-translate-y-0.5"
@@ -96,13 +99,21 @@ export default function Navbar() {
               </Link>
             ))}
             <hr className="border-white/[0.06] my-2" />
-            <a href="#" className="text-text-muted text-sm font-semibold hover:text-text-base transition-colors">Sign In</a>
+            <button
+              type="button"
+              onClick={() => { setMenuOpen(false); setSignInOpen(true); }}
+              className="text-text-muted text-sm font-semibold hover:text-text-base transition-colors text-left"
+            >
+              Sign In
+            </button>
             <a href="#" className="btn-shimmer bg-amber text-bg text-xs font-bold tracking-wider uppercase px-5 py-2.5 text-center">
               Start Free
             </a>
           </motion.div>
         )}
       </AnimatePresence>
+
+      <SignInModal open={signInOpen} onClose={() => setSignInOpen(false)} />
     </nav>
   )
 }
