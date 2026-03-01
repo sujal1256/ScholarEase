@@ -1,0 +1,13 @@
+# RuboCop configuration
+# See https://docs.rubocop.org/ for all options.
+
+Style/Documentation:
+  Enabled: false
+
+Metrics/MethodLength:
+  Enabled: true
+  Max: 30
+  CountAsOne: ["array", "hash"]
+
+Style/ClassAndModuleChildren:
+  Enabled: false
