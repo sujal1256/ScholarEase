@@ -1,17 +1,8 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600&family=Syne:wght@400;500;600;700;800&family=DM+Mono:wght@300;400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@300;400&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-:root {
-  --amber: #d4913a;
-  --amber-lt: #e8a84a;
-  --amber-dim: rgba(212, 145, 58, 0.08);
-  --amber-glow: rgba(212, 145, 58, 0.12);
-  --border: rgba(255, 255, 255, 0.06);
-  --border-hi: rgba(255, 255, 255, 0.12);
-}
 
 * {
   box-sizing: border-box;
@@ -24,89 +15,40 @@ html {
 }
 
 body {
-  background: #09090d;
-  color: #ddd9d0;
-  font-family: 'Syne', sans-serif;
+  background: #ffffff;
+  color: #374151;
+  font-family: 'Inter', system-ui, sans-serif;
   overflow-x: hidden;
 }
 
-/* Grain overlay */
-body::before {
-  content: '';
-  position: fixed;
-  inset: 0;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
-  opacity: 0.04;
-  pointer-events: none;
-  z-index: 9999;
-}
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: #f5f7f5; }
+::-webkit-scrollbar-thumb { background: rgba(74,155,142,0.3); border-radius: 3px; }
 
-/* Shimmer button animation */
-.btn-shimmer {
-  position: relative;
-  overflow: hidden;
-}
-.btn-shimmer::after {
-  content: '';
+/* Floating logo icons */
+.floating-logo {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.08);
   position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.22), transparent);
-  background-size: 200%;
-  animation: shimmer 2.5s infinite;
-}
-
-@keyframes shimmer {
-  0%   { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
-/* Floating doc cards */
-@keyframes float1 {
-  0%,100% { transform: translateY(0) rotate(-1.5deg); }
-  50%      { transform: translateY(-14px) rotate(-1.5deg); }
-}
-@keyframes float2 {
-  0%,100% { transform: translateY(0) rotate(2.5deg); }
-  50%      { transform: translateY(-10px) rotate(2.5deg); }
-}
-@keyframes float3 {
-  0%,100% { transform: translateY(0) rotate(-0.5deg); }
-  50%      { transform: translateY(-8px) rotate(-0.5deg); }
-}
-@keyframes orb {
-  0%,100% { transform: translate(0,0); }
-  33%      { transform: translate(30px,-20px); }
-  66%      { transform: translate(-20px,15px); }
-}
-@keyframes pulse2 {
-  0%,100% { opacity: 1; }
-  50%      { opacity: 0.35; }
-}
-
-.animate-float1 { animation: float1 6s ease-in-out infinite; }
-.animate-float2 { animation: float2 7s 1s ease-in-out infinite; }
-.animate-float3 { animation: float3 5s 0.5s ease-in-out infinite; }
-.animate-orb1   { animation: orb 18s ease-in-out infinite; }
-.animate-orb2   { animation: orb 22s 3s ease-in-out infinite; }
-.animate-pulse2 { animation: pulse2 2s ease-in-out infinite; }
-.animate-led    { animation: pulse2 1.8s ease-in-out infinite; }
-
-/* Grid background for hero right panel */
-.grid-bg {
-  background-image:
-    linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px);
-  background-size: 44px 44px;
-  mask-image: radial-gradient(ellipse at center, black 20%, transparent 72%);
 }
 
 /* Step hover accent */
+.how-step {
+  position: relative;
+}
 .how-step::before {
   content: '';
   position: absolute;
   top: 0; left: 0; right: 0;
   height: 2px;
-  background: linear-gradient(90deg, #d4913a, transparent);
+  background: linear-gradient(90deg, #4a9b8e, transparent);
   transform: scaleX(0);
   transform-origin: left;
   transition: transform 0.4s ease;
@@ -114,8 +56,3 @@ body::before {
 .how-step:hover::before {
   transform: scaleX(1);
 }
-
-/* Scrollbar */
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #09090d; }
-::-webkit-scrollbar-thumb { background: rgba(212,145,58,0.3); border-radius: 3px; }

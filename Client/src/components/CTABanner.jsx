@@ -6,18 +6,18 @@ export default function CTABanner() {
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section className="border-b border-white/[0.06] bg-surface relative overflow-hidden">
-      {/* Ambient glow */}
+    <section className="bg-white relative overflow-hidden">
+      {/* Subtle gradient */}
       <div
         className="absolute inset-0 pointer-events-none"
-        style={{ background: 'radial-gradient(ellipse at center, rgba(212,145,58,0.06) 0%, transparent 65%)' }}
+        style={{ background: 'radial-gradient(ellipse at center, rgba(74,155,142,0.06) 0%, transparent 65%)' }}
       />
 
       <div ref={ref} className="max-w-[900px] mx-auto px-8 md:px-16 py-28 text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
-          className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-amber mb-5"
+          className="text-sm font-semibold text-primary tracking-wide uppercase mb-4"
         >
           Ready to begin?
         </motion.div>
@@ -26,20 +26,18 @@ export default function CTABanner() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.1 }}
-          className="font-cormorant font-semibold text-off-white leading-tight mb-5"
-          style={{ fontSize: 'clamp(2.8rem,4.5vw,4.2rem)', letterSpacing: '-0.02em' }}
+          className="font-heading font-bold text-text-heading leading-tight mb-5"
+          style={{ fontSize: 'clamp(2.4rem, 4vw, 3.5rem)' }}
         >
           Stop drowning in PDFs.<br />
-          Start{' '}
-          <em className="text-amber font-light">understanding</em>{' '}
-          faster.
+          Start <span className="text-primary">understanding</span> faster.
         </motion.h2>
 
         <motion.p
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.2 }}
-          className="text-[0.96rem] leading-relaxed text-text-muted mb-10"
+          className="text-text-muted leading-relaxed mb-10"
         >
           Join 3,200+ researchers, students, and analysts who use ScholarEase to navigate the world's knowledge.
         </motion.p>
@@ -52,16 +50,15 @@ export default function CTABanner() {
         >
           <a
             href="#"
-            className="btn-shimmer bg-amber text-bg font-bold tracking-wider uppercase px-8 py-3.5 transition-all duration-200 hover:bg-amber-lt hover:-translate-y-0.5"
-            style={{ fontSize: '0.82rem' }}
+            className="bg-primary text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:bg-primary-dark hover:-translate-y-0.5"
           >
             Upload Your First Paper
           </a>
           <a
             href="#"
-            className="text-text-muted text-[0.82rem] font-semibold tracking-wider uppercase px-5 py-3.5 border border-white/[0.12] transition-all duration-200 hover:text-text-base hover:border-white/25"
+            className="text-text-heading text-sm font-semibold px-6 py-3.5 border-2 border-border rounded-full transition-all duration-200 hover:border-primary hover:text-primary"
           >
-            See a live demo →
+            See a live demo &rarr;
           </a>
         </motion.div>
 
@@ -69,9 +66,9 @@ export default function CTABanner() {
           initial={{ opacity: 0 }}
           animate={inView ? { opacity: 1 } : {}}
           transition={{ delay: 0.5 }}
-          className="font-mono text-[0.62rem] tracking-wider text-text-dim mt-5"
+          className="text-xs text-text-dim mt-5"
         >
-          No credit card required · Free tier available · Ready in 30 seconds
+          No credit card required &middot; Free tier available &middot; Ready in 30 seconds
         </motion.p>
       </div>
     </section>

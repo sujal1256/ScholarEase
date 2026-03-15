@@ -24,12 +24,18 @@ export default function Navbar() {
 
   return (
     <nav
-      className="sticky top-0 z-50 flex items-center justify-between px-8 md:px-16 py-5 border-b border-white/[0.06] transition-all duration-300"
-      style={{ background: scrolled ? 'rgba(9,9,13,0.95)' : 'rgba(9,9,13,0.88)', backdropFilter: 'blur(20px)' }}
+      className={`sticky top-0 z-50 flex items-center justify-between px-8 md:px-16 py-4 transition-all duration-300 ${
+        scrolled ? 'shadow-sm' : ''
+      }`}
+      style={{
+        background: scrolled ? 'rgba(255,255,255,0.95)' : 'rgba(255,255,255,0.88)',
+        backdropFilter: 'blur(20px)',
+        borderBottom: '1px solid #e5e7eb',
+      }}
     >
       {/* Logo */}
-      <a href="#" className="font-cormorant text-2xl font-bold text-off-white no-underline">
-        ScholarEase<sup className="text-amber font-mono font-normal" style={{ fontSize: '0.5em', verticalAlign: 'super', letterSpacing: '0.1em' }}>AI</sup>
+      <a href="#" className="font-heading text-xl font-bold text-text-heading no-underline flex items-center gap-1">
+        ScholarEase<sup className="text-primary font-mono font-normal" style={{ fontSize: '0.5em', verticalAlign: 'super', letterSpacing: '0.1em' }}>AI</sup>
       </a>
 
       {/* Desktop Nav Links */}
@@ -39,7 +45,7 @@ export default function Navbar() {
             <Link
               to={link.to}
               smooth duration={500}
-              className="text-text-muted text-xs font-semibold tracking-widest uppercase cursor-pointer transition-colors duration-200 hover:text-text-base"
+              className="text-text-muted text-sm font-medium cursor-pointer transition-colors duration-200 hover:text-text-heading"
             >
               {link.label}
             </Link>
@@ -52,24 +58,21 @@ export default function Navbar() {
         <button
           type="button"
           onClick={() => setSignInOpen(true)}
-          className="text-text-muted text-xs font-semibold tracking-wider uppercase px-4 py-2 border border-white/[0.12] transition-all duration-200 hover:text-text-base hover:border-white/25"
+          className="text-text-muted text-sm font-medium px-4 py-2 transition-all duration-200 hover:text-text-heading"
         >
-          Sign In
+          Sign Up / In
         </button>
         <a
           href="#"
-          className="btn-shimmer bg-amber text-bg text-xs font-bold tracking-wider uppercase px-5 py-2.5 transition-all duration-200 hover:bg-amber-lt hover:-translate-y-0.5"
-          style={{ boxShadow: 'none' }}
-          onMouseEnter={e => e.currentTarget.style.boxShadow = '0 6px 24px rgba(212,145,58,0.28)'}
-          onMouseLeave={e => e.currentTarget.style.boxShadow = 'none'}
+          className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-200 hover:bg-primary-dark hover:-translate-y-0.5"
         >
-          Start Free
+          Get Started
         </a>
       </div>
 
       {/* Mobile Menu Toggle */}
       <button
-        className="md:hidden text-text-muted hover:text-text-base transition-colors"
+        className="md:hidden text-text-muted hover:text-text-heading transition-colors"
         onClick={() => setMenuOpen(!menuOpen)}
         aria-label="Toggle menu"
       >
@@ -84,7 +87,7 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -16 }}
             transition={{ duration: 0.2 }}
-            className="absolute top-full left-0 right-0 bg-surface border-b border-white/[0.06] py-6 px-8 flex flex-col gap-4 md:hidden"
+            className="absolute top-full left-0 right-0 bg-white border-b border-border py-6 px-8 flex flex-col gap-4 md:hidden shadow-lg"
           >
             {navLinks.map((link) => (
               <Link
@@ -92,22 +95,22 @@ export default function Navbar() {
                 to={link.to}
                 smooth
                 duration={500}
-                className="text-text-muted text-sm font-semibold tracking-wider uppercase cursor-pointer hover:text-text-base transition-colors"
+                className="text-text-muted text-sm font-medium cursor-pointer hover:text-text-heading transition-colors"
                 onClick={() => setMenuOpen(false)}
               >
                 {link.label}
               </Link>
             ))}
-            <hr className="border-white/[0.06] my-2" />
+            <hr className="border-border my-2" />
             <button
               type="button"
               onClick={() => { setMenuOpen(false); setSignInOpen(true); }}
-              className="text-text-muted text-sm font-semibold hover:text-text-base transition-colors text-left"
+              className="text-text-muted text-sm font-medium hover:text-text-heading transition-colors text-left"
             >
-              Sign In
+              Sign Up / In
             </button>
-            <a href="#" className="btn-shimmer bg-amber text-bg text-xs font-bold tracking-wider uppercase px-5 py-2.5 text-center">
-              Start Free
+            <a href="#" className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-full text-center">
+              Get Started
             </a>
           </motion.div>
         )}

@@ -23,7 +23,7 @@ export default function SignInModal({ open, onClose }) {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm"
+            className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm"
             onClick={onClose}
             aria-hidden
           />
@@ -35,18 +35,17 @@ export default function SignInModal({ open, onClose }) {
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0, scale: 0.96 }}
             transition={{ duration: 0.2 }}
-            className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-lg border border-white/[0.12] bg-[#0d0d11] p-8 shadow-xl"
-            style={{ boxShadow: '0 24px 48px rgba(0,0,0,0.4)' }}
+            className="fixed left-1/2 top-1/2 z-[101] w-full max-w-md -translate-x-1/2 -translate-y-1/2 rounded-2xl border border-border bg-white p-8 shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-6">
-              <h2 id="signin-title" className="font-cormorant text-xl font-semibold text-off-white">
+              <h2 id="signin-title" className="font-heading text-xl font-bold text-text-heading">
                 Sign In
               </h2>
               <button
                 type="button"
                 onClick={onClose}
-                className="text-text-muted hover:text-text-base transition-colors p-1 -m-1"
+                className="text-text-dim hover:text-text-heading transition-colors p-1 -m-1"
                 aria-label="Close"
               >
                 <RiCloseLine size={24} />
@@ -56,7 +55,6 @@ export default function SignInModal({ open, onClose }) {
               className="flex flex-col gap-4"
               onSubmit={(e) => {
                 e.preventDefault()
-                // Placeholder: wire to auth later
               }}
             >
               <label className="block">
@@ -68,7 +66,7 @@ export default function SignInModal({ open, onClose }) {
                   name="email"
                   autoComplete="email"
                   placeholder="you@example.com"
-                  className="w-full rounded border border-white/[0.12] bg-white/[0.04] px-4 py-3 text-sm text-off-white placeholder:text-text-muted focus:border-amber focus:outline-none focus:ring-1 focus:ring-amber/50 transition-colors"
+                  className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-text-heading placeholder:text-text-dim focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
                 />
               </label>
               <label className="block">
@@ -80,22 +78,19 @@ export default function SignInModal({ open, onClose }) {
                   name="password"
                   autoComplete="current-password"
                   placeholder="••••••••"
-                  className="w-full rounded border border-white/[0.12] bg-white/[0.04] px-4 py-3 text-sm text-off-white placeholder:text-text-muted focus:border-amber focus:outline-none focus:ring-1 focus:ring-amber/50 transition-colors"
+                  className="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-text-heading placeholder:text-text-dim focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/20 transition-colors"
                 />
               </label>
               <a
                 href="#"
-                className="text-xs text-amber hover:text-amber-lt transition-colors"
+                className="text-xs text-primary hover:text-primary-dark transition-colors"
                 onClick={(e) => e.preventDefault()}
               >
                 Forgot password?
               </a>
               <button
                 type="submit"
-                className="btn-shimmer mt-2 w-full bg-amber text-bg text-xs font-bold tracking-wider uppercase py-3 rounded transition-all hover:bg-amber-lt"
-                style={{ boxShadow: 'none' }}
-                onMouseEnter={(e) => (e.currentTarget.style.boxShadow = '0 6px 24px rgba(212,145,58,0.28)')}
-                onMouseLeave={(e) => (e.currentTarget.style.boxShadow = 'none')}
+                className="mt-2 w-full bg-primary text-white text-sm font-semibold py-3 rounded-full transition-all hover:bg-primary-dark"
               >
                 Sign In
               </button>

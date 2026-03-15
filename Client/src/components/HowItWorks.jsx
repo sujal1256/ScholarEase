@@ -10,7 +10,7 @@ const steps = [
   {
     n: '02',
     title: 'AI Analyses & Summarises',
-    desc: 'Our model produces a structured summary: abstract, methodology, findings, limitations, and key takeaways — in seconds.',
+    desc: 'Our model produces a structured summary: abstract, methodology, findings, limitations, and key takeaways.',
   },
   {
     n: '03',
@@ -24,10 +24,9 @@ const steps = [
   },
 ]
 
-function Step({ step, index, total }) {
+function Step({ step, index }) {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
-  const isLast = index === total - 1
 
   return (
     <motion.div
@@ -35,17 +34,16 @@ function Step({ step, index, total }) {
       initial={{ opacity: 0, y: 20 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="how-step relative p-10 overflow-hidden"
-      style={{ borderRight: isLast ? 'none' : '1px solid rgba(255,255,255,0.06)' }}
+      className="how-step relative p-8 rounded-2xl bg-white border border-border hover:shadow-md hover:border-primary/20 transition-all duration-300"
     >
       <div
-        className="font-cormorant font-bold leading-none mb-5"
-        style={{ fontSize: '3.2rem', color: 'rgba(255,255,255,0.1)' }}
+        className="font-heading font-extrabold leading-none mb-4 text-primary/20"
+        style={{ fontSize: '3rem' }}
       >
         {step.n}
       </div>
-      <h3 className="text-[0.95rem] font-bold text-off-white mb-2.5">{step.title}</h3>
-      <p className="text-[0.83rem] leading-relaxed text-text-muted">{step.desc}</p>
+      <h3 className="text-base font-bold text-text-heading mb-2">{step.title}</h3>
+      <p className="text-sm leading-relaxed text-text-muted">{step.desc}</p>
     </motion.div>
   )
 }
@@ -55,14 +53,14 @@ export default function HowItWorks() {
   const titleInView = useInView(titleRef, { once: true })
 
   return (
-    <section id="how" className="border-b border-white/[0.06] bg-surface">
+    <section id="how" className="bg-white">
       <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-24">
-        <div ref={titleRef}>
+        <div ref={titleRef} className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={titleInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5 }}
-            className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-amber mb-4"
+            className="text-sm font-semibold text-primary tracking-wide uppercase mb-3"
           >
             The process
           </motion.div>
@@ -70,22 +68,16 @@ export default function HowItWorks() {
             initial={{ opacity: 0, y: 16 }}
             animate={titleInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="font-cormorant font-semibold text-off-white leading-tight"
-            style={{ fontSize: 'clamp(2.2rem,3.8vw,3.5rem)', letterSpacing: '-0.02em' }}
+            className="font-heading font-bold text-text-heading leading-tight"
+            style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}
           >
-            From PDF to{' '}
-            <em className="text-amber font-light">insight</em>{' '}
-            in four steps
+            From PDF to <span className="text-primary">insight</span> in four steps
           </motion.h2>
         </div>
 
-        {/* Steps grid */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 mt-16"
-          style={{ border: '1px solid rgba(255,255,255,0.06)' }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {steps.map((step, i) => (
-            <Step key={step.n} step={step} index={i} total={steps.length} />
+            <Step key={step.n} step={step} index={i} />
           ))}
         </div>
       </div>

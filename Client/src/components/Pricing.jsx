@@ -6,7 +6,7 @@ const plans = [
   {
     badge: 'For individuals',
     name: 'Free',
-    price: '₹0',
+    price: '\u20b90',
     period: 'Forever free',
     featured: false,
     cta: 'Get started free',
@@ -23,8 +23,8 @@ const plans = [
   {
     badge: 'Most popular',
     name: 'Scholar',
-    price: '₹799',
-    period: 'Billed monthly · Save 30% annually',
+    price: '\u20b9799',
+    period: 'Billed monthly \u00b7 Save 30% annually',
     featured: true,
     cta: 'Start 14-day trial',
     features: [
@@ -40,8 +40,8 @@ const plans = [
   {
     badge: 'For labs & teams',
     name: 'Lab',
-    price: '₹2,499',
-    period: 'Up to 10 seats · billed monthly',
+    price: '\u20b92,499',
+    period: 'Up to 10 seats \u00b7 billed monthly',
     featured: false,
     cta: 'Contact us',
     features: [
@@ -66,33 +66,38 @@ function PriceCard({ plan, index }) {
       initial={{ opacity: 0, y: 20 }}
       animate={inView ? { opacity: 1, y: 0 } : {}}
       transition={{ duration: 0.5, delay: index * 0.1 }}
-      className="relative p-12 flex flex-col"
-      style={{
-        borderRight: index < plans.length - 1 ? '1px solid rgba(255,255,255,0.06)' : 'none',
-        background: plan.featured ? '#0f1016' : 'transparent',
-        borderTop: plan.featured ? '2px solid #d4913a' : '2px solid transparent',
-      }}
+      className={`relative p-10 flex flex-col rounded-2xl border transition-shadow duration-300 ${
+        plan.featured
+          ? 'bg-white border-primary shadow-lg shadow-primary/10 ring-2 ring-primary/20'
+          : 'bg-white border-border hover:shadow-md'
+      }`}
     >
-      <div className="font-mono text-[0.62rem] tracking-widest uppercase text-amber mb-4">
+      {plan.featured && (
+        <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-white text-xs font-semibold px-4 py-1 rounded-full">
+          Most popular
+        </div>
+      )}
+
+      <div className="text-xs font-semibold text-primary tracking-wide uppercase mb-3">
         {plan.badge}
       </div>
-      <div className="font-cormorant font-bold text-off-white mb-2" style={{ fontSize: '2rem' }}>
+      <div className="font-heading font-bold text-text-heading text-2xl mb-2">
         {plan.name}
       </div>
-      <div className="font-cormorant font-bold text-off-white leading-none mb-1" style={{ fontSize: '3.2rem' }}>
+      <div className="font-heading font-extrabold text-text-heading leading-none mb-1" style={{ fontSize: '2.8rem' }}>
         {plan.price}
-        <span className="font-syne font-normal text-text-muted" style={{ fontSize: '1.2rem' }}>/mo</span>
+        <span className="font-sans font-normal text-text-dim text-lg">/mo</span>
       </div>
-      <div className="font-mono text-[0.62rem] text-text-muted mb-8">{plan.period}</div>
+      <div className="text-xs text-text-dim mb-7">{plan.period}</div>
 
-      <hr className="border-white/[0.06] mb-7" />
+      <hr className="border-border mb-6" />
 
-      <ul className="flex flex-col gap-3 mb-9 flex-1">
+      <ul className="flex flex-col gap-3 mb-8 flex-1">
         {plan.features.map((f) => (
-          <li key={f.text} className={`flex items-center gap-2.5 text-[0.84rem] ${f.active ? 'text-text-muted' : 'text-text-dim'}`}>
-            <span
-              className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-              style={{ background: f.active ? '#d4913a' : '#38362f' }}
+          <li key={f.text} className={`flex items-center gap-2.5 text-sm ${f.active ? 'text-text-base' : 'text-text-dim'}`}>
+            <RiCheckLine
+              size={16}
+              className={f.active ? 'text-primary flex-shrink-0' : 'text-gray-300 flex-shrink-0'}
             />
             {f.text}
           </li>
@@ -100,17 +105,11 @@ function PriceCard({ plan, index }) {
       </ul>
 
       <button
-        className={`w-full py-3 text-[0.78rem] font-bold tracking-wider uppercase transition-all duration-200 ${
+        className={`w-full py-3 text-sm font-semibold rounded-full transition-all duration-200 ${
           plan.featured
-            ? 'bg-amber text-bg hover:bg-amber-lt'
-            : 'text-text-muted hover:text-text-base hover:border-white/25'
+            ? 'bg-primary text-white hover:bg-primary-dark'
+            : 'text-text-heading border-2 border-border hover:border-primary hover:text-primary'
         }`}
-        style={{
-          border: plan.featured ? '1px solid #d4913a' : '1px solid rgba(255,255,255,0.12)',
-          boxShadow: 'none',
-        }}
-        onMouseEnter={e => plan.featured && (e.currentTarget.style.boxShadow = '0 6px 24px rgba(212,145,58,0.25)')}
-        onMouseLeave={e => plan.featured && (e.currentTarget.style.boxShadow = 'none')}
       >
         {plan.cta}
       </button>
@@ -123,14 +122,14 @@ export default function Pricing() {
   const inView = useInView(ref, { once: true })
 
   return (
-    <section id="pricing" className="border-b border-white/[0.06]">
+    <section id="pricing" className="bg-surface">
       <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-24">
         {/* Head */}
         <div ref={ref} className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
-            className="font-mono text-[0.65rem] tracking-[0.2em] uppercase text-amber mb-4"
+            className="text-sm font-semibold text-primary tracking-wide uppercase mb-3"
           >
             Simple pricing
           </motion.div>
@@ -138,27 +137,23 @@ export default function Pricing() {
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1 }}
-            className="font-cormorant font-semibold text-off-white mb-3 leading-tight"
-            style={{ fontSize: 'clamp(2.2rem,3.8vw,3.5rem)', letterSpacing: '-0.02em' }}
+            className="font-heading font-bold text-text-heading mb-3 leading-tight"
+            style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}
           >
-            Plans for every{' '}
-            <em className="text-amber font-light">kind of researcher</em>
+            Plans for every <span className="text-primary">kind of researcher</span>
           </motion.h2>
           <motion.p
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.2 }}
-            className="text-[0.95rem] text-text-muted"
+            className="text-text-muted"
           >
             No hidden fees. Cancel anytime. All plans include core AI summarisation.
           </motion.p>
         </div>
 
         {/* Cards */}
-        <div
-          className="grid grid-cols-1 md:grid-cols-3"
-          style={{ border: '1px solid rgba(255,255,255,0.06)' }}
-        >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan, i) => (
             <PriceCard key={plan.name} plan={plan} index={i} />
           ))}

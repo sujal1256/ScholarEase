@@ -10,7 +10,7 @@ import Footer from './components/Footer'
 
 export default function App() {
   return (
-    <div className="min-h-screen bg-bg font-syne">
+    <div className="min-h-screen bg-bg font-sans">
       <Navbar />
       <Hero />
       <Features />
