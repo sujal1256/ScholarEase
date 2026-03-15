@@ -1,19 +1,22 @@
 import { useRef } from 'react'
 import { motion, useInView } from 'framer-motion'
+import { Link } from 'react-router-dom'
 
 export default function CTABanner() {
   const ref = useRef(null)
   const inView = useInView(ref, { once: true, margin: '-60px' })
 
   return (
-    <section className="bg-white relative overflow-hidden">
+    <section className="bg-transparent relative overflow-hidden">
+      <div className="max-w-[1320px] mx-auto px-4 md:px-10 py-12">
+      <div className="bg-surface/70 rounded-3xl border border-border/50 px-8 md:px-14 py-20 relative overflow-hidden">
       {/* Subtle gradient */}
       <div
         className="absolute inset-0 pointer-events-none"
         style={{ background: 'radial-gradient(ellipse at center, rgba(74,155,142,0.06) 0%, transparent 65%)' }}
       />
 
-      <div ref={ref} className="max-w-[900px] mx-auto px-8 md:px-16 py-28 text-center relative z-10">
+      <div ref={ref} className="max-w-[900px] mx-auto text-center relative z-10">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
@@ -26,7 +29,7 @@ export default function CTABanner() {
           initial={{ opacity: 0, y: 20 }}
           animate={inView ? { opacity: 1, y: 0 } : {}}
           transition={{ delay: 0.1 }}
-          className="font-heading font-bold text-text-heading leading-tight mb-5"
+          className="font-heading font-extrabold text-text-heading leading-tight mb-5"
           style={{ fontSize: 'clamp(2.4rem, 4vw, 3.5rem)' }}
         >
           Stop drowning in PDFs.<br />
@@ -48,12 +51,12 @@ export default function CTABanner() {
           transition={{ delay: 0.3 }}
           className="flex items-center justify-center flex-wrap gap-4"
         >
-          <a
-            href="#"
-            className="bg-primary text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:bg-primary-dark hover:-translate-y-0.5"
+          <Link
+            to="/upload"
+            className="bg-primary text-white font-semibold px-8 py-3.5 rounded-full text-sm transition-all duration-200 hover:bg-primary-dark hover:-translate-y-0.5 no-underline"
           >
             Upload Your First Paper
-          </a>
+          </Link>
           <a
             href="#"
             className="text-text-heading text-sm font-semibold px-6 py-3.5 border-2 border-border rounded-full transition-all duration-200 hover:border-primary hover:text-primary"
@@ -70,6 +73,8 @@ export default function CTABanner() {
         >
           No credit card required &middot; Free tier available &middot; Ready in 30 seconds
         </motion.p>
+      </div>
+      </div>
       </div>
     </section>
   )

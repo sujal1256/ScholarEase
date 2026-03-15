@@ -73,8 +73,9 @@ export default function Features() {
   const headInView = useInView(headRef, { once: true, margin: '-60px' })
 
   return (
-    <section id="features" className="bg-surface">
-      <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-24">
+    <section id="features" className="bg-transparent">
+      <div className="max-w-[1320px] mx-auto px-4 md:px-10 py-12">
+      <div className="bg-surface/70 rounded-3xl border border-border/50 px-8 md:px-14 py-20">
         {/* Header */}
         <div ref={headRef} className="text-center mb-16">
           <motion.div
@@ -89,7 +90,7 @@ export default function Features() {
             initial={{ opacity: 0, y: 20 }}
             animate={headInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.6, delay: 0.1 }}
-            className="font-heading font-bold text-text-heading leading-tight mb-4"
+            className="font-heading font-extrabold text-text-heading leading-tight mb-4"
             style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}
           >
             Everything your research workflow needs
@@ -110,6 +111,7 @@ export default function Features() {
             <FeatureCard key={f.title} feature={f} index={i} />
           ))}
         </div>
+      </div>
       </div>
     </section>
   )

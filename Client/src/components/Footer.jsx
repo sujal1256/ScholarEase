@@ -15,7 +15,7 @@ const footerCols = [
 
 export default function Footer() {
   return (
-    <footer className="px-8 md:px-16 pt-14 pb-10 bg-surface border-t border-border">
+    <footer className="px-8 md:px-16 pt-14 pb-10 bg-transparent border-t border-border">
       {/* Top */}
       <div className="flex flex-col md:flex-row md:justify-between md:items-start gap-12 pb-10 border-b border-border mb-8">
         {/* Brand */}

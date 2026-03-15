@@ -122,8 +122,9 @@ export default function Pricing() {
   const inView = useInView(ref, { once: true })
 
   return (
-    <section id="pricing" className="bg-surface">
-      <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-24">
+    <section id="pricing" className="bg-transparent">
+      <div className="max-w-[1320px] mx-auto px-4 md:px-10 py-12">
+      <div className="bg-surface/70 rounded-3xl border border-border/50 px-8 md:px-14 py-20">
         {/* Head */}
         <div ref={ref} className="text-center mb-16">
           <motion.div
@@ -137,7 +138,7 @@ export default function Pricing() {
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1 }}
-            className="font-heading font-bold text-text-heading mb-3 leading-tight"
+            className="font-heading font-extrabold text-text-heading mb-3 leading-tight"
             style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}
           >
             Plans for every <span className="text-primary">kind of researcher</span>
@@ -158,6 +159,7 @@ export default function Pricing() {
             <PriceCard key={plan.name} plan={plan} index={i} />
           ))}
         </div>
+      </div>
       </div>
     </section>
   )

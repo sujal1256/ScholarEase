@@ -59,8 +59,9 @@ export default function Testimonials() {
   const inView = useInView(ref, { once: true })
 
   return (
-    <section className="bg-white">
-      <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-24">
+    <section className="bg-transparent">
+      <div className="max-w-[1320px] mx-auto px-4 md:px-10 py-12">
+      <div className="bg-surface/70 rounded-3xl border border-border/50 px-8 md:px-14 py-20">
         <div ref={ref} className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -73,7 +74,7 @@ export default function Testimonials() {
             initial={{ opacity: 0, y: 16 }}
             animate={inView ? { opacity: 1, y: 0 } : {}}
             transition={{ delay: 0.1 }}
-            className="font-heading font-bold text-text-heading leading-tight"
+            className="font-heading font-extrabold text-text-heading leading-tight"
             style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}
           >
             What people <span className="text-primary">actually say</span>
@@ -85,6 +86,7 @@ export default function Testimonials() {
             <TestCard key={t.name} t={t} index={i} />
           ))}
         </div>
+      </div>
       </div>
     </section>
   )

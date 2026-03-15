@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-scroll'
+import { Link as RouterLink } from 'react-router-dom'
 import { RiMenuLine, RiCloseLine } from 'react-icons/ri'
 import { motion, AnimatePresence } from 'framer-motion'
 import SignInModal from './SignInModal'
@@ -34,8 +35,29 @@ export default function Navbar() {
       }}
     >
       {/* Logo */}
-      <a href="#" className="font-heading text-xl font-bold text-text-heading no-underline flex items-center gap-1">
-        ScholarEase<sup className="text-primary font-mono font-normal" style={{ fontSize: '0.5em', verticalAlign: 'super', letterSpacing: '0.1em' }}>AI</sup>
+      <a href="#" className="font-heading text-xl font-bold text-text-heading no-underline flex items-center gap-2.5">
+        <span
+          className="relative flex items-center justify-center rounded-xl"
+          style={{
+            width: 38,
+            height: 38,
+            background: 'linear-gradient(135deg, #4a9b8e 0%, #3a7d72 100%)',
+            boxShadow: '0 2px 10px rgba(74,155,142,0.35)',
+          }}
+        >
+          {/* Open book with magnifier — research vibes */}
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            {/* Open book */}
+            <path d="M2 4C2 4 4 3 7 3C10 3 12 4.5 12 4.5C12 4.5 14 3 17 3C20 3 22 4 22 4V18C22 18 20 17 17 17C14 17 12 18.5 12 18.5C12 18.5 10 17 7 17C4 17 2 18 2 18V4Z" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="rgba(255,255,255,0.15)" />
+            <path d="M12 4.5V18.5" stroke="white" strokeWidth="1.5" strokeLinecap="round" />
+            {/* Small sparkle / AI dot */}
+            <circle cx="17.5" cy="8" r="1.2" fill="white" opacity="0.9" />
+            <path d="M17.5 6.2V9.8M15.7 8H19.3" stroke="white" strokeWidth="0.7" strokeLinecap="round" opacity="0.7" />
+          </svg>
+        </span>
+        <span className="flex items-baseline gap-0.5">
+          ScholarEase<sup className="text-primary font-mono font-semibold" style={{ fontSize: '0.55em', verticalAlign: 'super', letterSpacing: '0.08em' }}>AI</sup>
+        </span>
       </a>
 
       {/* Desktop Nav Links */}
@@ -62,12 +84,12 @@ export default function Navbar() {
         >
           Sign Up / In
         </button>
-        <a
-          href="#"
-          className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-200 hover:bg-primary-dark hover:-translate-y-0.5"
+        <RouterLink
+          to="/upload"
+          className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-full transition-all duration-200 hover:bg-primary-dark hover:-translate-y-0.5 no-underline"
         >
           Get Started
-        </a>
+        </RouterLink>
       </div>
 
       {/* Mobile Menu Toggle */}
@@ -109,9 +131,9 @@ export default function Navbar() {
             >
               Sign Up / In
             </button>
-            <a href="#" className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-full text-center">
+            <RouterLink to="/upload" className="bg-primary text-white text-sm font-semibold px-5 py-2.5 rounded-full text-center no-underline" onClick={() => setMenuOpen(false)}>
               Get Started
-            </a>
+            </RouterLink>
           </motion.div>
         )}
       </AnimatePresence>

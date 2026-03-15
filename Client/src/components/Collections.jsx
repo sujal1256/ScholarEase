@@ -52,8 +52,9 @@ export default function Collections() {
   const inView = useInView(ref, { once: true, margin: '-80px' })
 
   return (
-    <section id="collections" className="bg-surface">
-      <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-24">
+    <section id="collections" className="bg-transparent">
+      <div className="max-w-[1320px] mx-auto px-4 md:px-10 py-12">
+      <div className="bg-surface/70 rounded-3xl border border-border/50 px-8 md:px-14 py-20">
         <div className="grid md:grid-cols-2 gap-20 items-center">
 
           {/* Left text */}
@@ -67,7 +68,7 @@ export default function Collections() {
               Library management
             </div>
             <h2
-              className="font-heading font-bold text-text-heading leading-tight mb-6"
+              className="font-heading font-extrabold text-text-heading leading-tight mb-6"
               style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}
             >
               Your research,<br />
@@ -105,6 +106,7 @@ export default function Collections() {
             </div>
           </motion.div>
         </div>
+      </div>
       </div>
     </section>
   )

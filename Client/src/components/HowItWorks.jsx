@@ -53,8 +53,9 @@ export default function HowItWorks() {
   const titleInView = useInView(titleRef, { once: true })
 
   return (
-    <section id="how" className="bg-white">
-      <div className="max-w-[1200px] mx-auto px-8 md:px-16 py-24">
+    <section id="how" className="bg-transparent">
+      <div className="max-w-[1320px] mx-auto px-4 md:px-10 py-12">
+      <div className="bg-surface/70 rounded-3xl border border-border/50 px-8 md:px-14 py-20">
         <div ref={titleRef} className="text-center mb-16">
           <motion.div
             initial={{ opacity: 0, y: 16 }}
@@ -68,7 +69,7 @@ export default function HowItWorks() {
             initial={{ opacity: 0, y: 16 }}
             animate={titleInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="font-heading font-bold text-text-heading leading-tight"
+            className="font-heading font-extrabold text-text-heading leading-tight"
             style={{ fontSize: 'clamp(2rem, 3.5vw, 3rem)' }}
           >
             From PDF to <span className="text-primary">insight</span> in four steps
@@ -80,6 +81,7 @@ export default function HowItWorks() {
             <Step key={step.n} step={step} index={i} />
           ))}
         </div>
+      </div>
       </div>
     </section>
   )
