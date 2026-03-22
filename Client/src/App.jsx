@@ -3,6 +3,7 @@ import { PdfProvider } from './context/PdfContext'
 import Landing from './pages/Landing'
 import Upload from './pages/Upload'
 import DocumentView from './pages/DocumentView'
+import MyDocuments from './pages/MyDocuments'
 
 export default function App() {
   return (
@@ -20,6 +21,7 @@ export default function App() {
             <Route path="/" element={<Landing />} />
             <Route path="/upload" element={<Upload />} />
             <Route path="/view" element={<DocumentView />} />
+            <Route path="/documents" element={<MyDocuments />} />
           </Routes>
         </div>
       </PdfProvider>

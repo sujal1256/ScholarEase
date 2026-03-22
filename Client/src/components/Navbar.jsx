@@ -77,6 +77,12 @@ export default function Navbar() {
 
       {/* Desktop CTA */}
       <div className="hidden md:flex items-center gap-3">
+        <RouterLink
+          to="/documents"
+          className="text-text-muted text-sm font-medium px-4 py-2 transition-all duration-200 hover:text-text-heading no-underline"
+        >
+          My Documents
+        </RouterLink>
         <button
           type="button"
           onClick={() => setSignInOpen(true)}
@@ -124,6 +130,13 @@ export default function Navbar() {
               </Link>
             ))}
             <hr className="border-border my-2" />
+            <RouterLink
+              to="/documents"
+              className="text-text-muted text-sm font-medium hover:text-text-heading transition-colors no-underline"
+              onClick={() => setMenuOpen(false)}
+            >
+              My Documents
+            </RouterLink>
             <button
               type="button"
               onClick={() => { setMenuOpen(false); setSignInOpen(true); }}

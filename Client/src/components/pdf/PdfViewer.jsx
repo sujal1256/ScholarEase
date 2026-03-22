@@ -117,7 +117,7 @@ export default function PdfViewer({ file, fileName, showSidebar = true }) {
         </div>
 
         {/* Sidebar */}
-        {showSidebar && <PdfSidebar />}
+        {showSidebar && <PdfSidebar currentPage={currentPage} />}
       </div>
     </div>
   )

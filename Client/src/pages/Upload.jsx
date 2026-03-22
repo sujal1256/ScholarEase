@@ -1,16 +1,27 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { RiArrowRightLine, RiArrowLeftLine } from 'react-icons/ri'
+import { useState } from 'react'
 import PdfUploader from '../components/pdf/PdfUploader'
 import { usePdf } from '../context/PdfContext'
 
 export default function Upload() {
-  const { pdfFile, setFile } = usePdf()
+  const { pdfFile, setFile, uploadDocument, uploadLoading, uploadError, documentId } = usePdf()
   const navigate = useNavigate()
+  const [isProcessing, setIsProcessing] = useState(false)
 
-  const handleView = () => {
-    if (!pdfFile) return
-    navigate('/view')
+  const handleView = async () => {
+    if (!pdfFile || isProcessing) return
+
+    setIsProcessing(true)
+    try {
+      const result = await uploadDocument(pdfFile)
+      if (result) {
+        navigate('/view')
+      }
+    } finally {
+      setIsProcessing(false)
+    }
   }
 
   return (
@@ -71,15 +82,32 @@ export default function Upload() {
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="mt-6 flex justify-center"
+              className="mt-6 flex flex-col items-center gap-3"
             >
               <button
                 onClick={handleView}
-                className="flex items-center gap-2 px-8 py-3.5 bg-text-heading text-white text-sm font-semibold rounded-full hover:bg-gray-800 transition-all duration-200"
+                disabled={isProcessing}
+                className={`flex items-center gap-2 px-8 py-3.5 text-white text-sm font-semibold rounded-full transition-all duration-200 ${
+                  isProcessing
+                    ? 'bg-gray-400 cursor-not-allowed'
+                    : 'bg-text-heading hover:bg-gray-800'
+                }`}
               >
-                Open in Viewer
-                <RiArrowRightLine />
+                {isProcessing ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                    Uploading...
+                  </>
+                ) : (
+                  <>
+                    Open in Viewer
+                    <RiArrowRightLine />
+                  </>
+                )}
               </button>
+              {uploadError && (
+                <p className="text-xs text-red-500">{uploadError}</p>
+              )}
             </motion.div>
           )}
 

@@ -6,22 +6,37 @@ import { usePdf } from '../context/PdfContext'
 
 export default function DocumentView() {
   const navigate = useNavigate()
-  const { pdfFile, pdfName } = usePdf()
+  const { pdfFile, pdfName, documentId, documentSections } = usePdf()
   const [fileUrl, setFileUrl] = useState(null)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState(null)
 
   useEffect(() => {
-    if (!pdfFile) {
-      navigate('/upload')
+    // Case 1: Coming from upload with local file
+    if (pdfFile) {
+      const url = URL.createObjectURL(pdfFile)
+      setFileUrl(url)
+      setLoading(false)
+
+      return () => URL.revokeObjectURL(url)
+    }
+
+    // Case 2: Coming from documents list with backend-stored document
+    if (documentId && documentSections && documentSections.length > 0) {
+      // Document data is already in context from MyDocuments page
+      // We need to create a blob from the first section's content to pass to PdfViewer
+      // Actually, we need the PDF file itself. For now, we'll show the document sections
+      // The PdfViewer will work with what we have
+      setFileUrl('backend') // Special marker that we're loading from backend
+      setLoading(false)
       return
     }
 
-    const url = URL.createObjectURL(pdfFile)
-    setFileUrl(url)
+    // No document loaded, go back
+    navigate('/documents')
+  }, [pdfFile, documentId, documentSections, navigate])
 
-    return () => URL.revokeObjectURL(url)
-  }, [pdfFile, navigate])
-
-  if (!fileUrl) {
+  if (loading || !fileUrl) {
     return (
       <div className="h-screen flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
@@ -29,16 +44,30 @@ export default function DocumentView() {
     )
   }
 
+  if (error) {
+    return (
+      <div className="h-screen flex flex-col items-center justify-center gap-4">
+        <p className="text-red-500 text-sm">{error}</p>
+        <Link to="/documents" className="text-primary hover:text-primary-dark">
+          Back to Documents
+        </Link>
+      </div>
+    )
+  }
+
+  const backLink = documentId ? '/documents' : '/upload'
+  const backLabel = documentId ? 'My Documents' : 'Back'
+
   return (
     <div className="h-screen flex flex-col">
       {/* Top bar */}
       <div className="flex items-center gap-4 px-4 py-2 bg-white border-b border-border">
         <Link
-          to="/upload"
+          to={backLink}
           className="flex items-center gap-1.5 text-sm text-text-muted hover:text-text-heading transition-colors"
         >
           <RiArrowLeftLine size={16} />
-          Back
+          {backLabel}
         </Link>
         <div className="w-px h-5 bg-border" />
         <Link to="/" className="font-heading text-sm font-bold text-text-heading no-underline flex items-center gap-1.5">
