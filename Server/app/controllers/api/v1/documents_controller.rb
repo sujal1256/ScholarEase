@@ -90,7 +90,7 @@ class Api::V1::DocumentsController < ApplicationController
         id: doc.id,
         title: doc.title,
         page_count: doc.page_count,
-        status: doc.status,
+        about: doc.about,
         created_at: doc.created_at,
         updated_at: doc.updated_at
       }

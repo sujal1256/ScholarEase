@@ -23,5 +23,12 @@ class ExplainSectionJob
 
   def save_ai_response(section, output)
     AiResponse.create!(section: section, intent: 'simplify', output: output)
+    update_document_about(section.document)
+  end
+
+  def update_document_about(document)
+    return if document.about.present?
+    about = document.derive_about
+    document.update_columns(about: about) if about
   end
 end

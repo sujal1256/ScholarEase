@@ -1,7 +1,7 @@
 import { useNavigate, Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { RiFilePdfLine, RiArrowLeftLine, RiLoader4Line } from 'react-icons/ri'
+import { RiFilePdfLine, RiLoader4Line, RiCalendarLine } from 'react-icons/ri'
 import { usePdf } from '../context/PdfContext'
 
 export default function MyDocuments() {
@@ -62,6 +62,26 @@ export default function MyDocuments() {
 
   return (
     <div className="min-h-screen flex flex-col bg-white">
+      {/* Full-screen loading overlay when opening a document */}
+      {openingDoc && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center gap-5"
+        >
+          <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center">
+            <RiFilePdfLine size={28} className="text-primary" />
+          </div>
+          <div className="flex flex-col items-center gap-2">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:0ms]" />
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:150ms]" />
+              <div className="w-2 h-2 rounded-full bg-primary animate-bounce [animation-delay:300ms]" />
+            </div>
+            <p className="text-sm font-medium text-text-muted">Opening document...</p>
+          </div>
+        </motion.div>
+      )}
       {/* Navigation */}
       <nav className="flex items-center justify-between px-8 md:px-16 py-4 border-b border-border">
         <Link to="/" className="font-heading text-xl font-bold text-text-heading no-underline flex items-center gap-2.5">
@@ -137,48 +157,69 @@ export default function MyDocuments() {
             </div>
           ) : (
             <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                 {documents.map((doc, idx) => (
                   <motion.div
                     key={doc.id}
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: idx * 0.05 }}
-                    onClick={() => handleOpenDocument(doc.id)}
-                    className="relative p-5 border border-border rounded-xl hover:border-primary/40 hover:shadow-md transition-all duration-200 cursor-pointer group bg-white"
+                    onClick={() => openingDoc ? null : handleOpenDocument(doc.id)}
+                    className={`relative border rounded-2xl overflow-hidden bg-white transition-all duration-200 ${
+                      openingDoc === doc.id
+                        ? 'border-primary/40 shadow-lg cursor-wait'
+                        : 'border-border hover:border-primary/40 hover:shadow-lg cursor-pointer group'
+                    }`}
                   >
-                    {/* PDF Icon */}
-                    <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-3 group-hover:bg-primary/15 transition-colors">
-                      <RiFilePdfLine size={20} className="text-primary" />
-                    </div>
-
-                    {/* Title & Metadata */}
-                    <h3 className="text-sm font-bold text-text-heading truncate mb-1 group-hover:text-primary transition-colors">
-                      {doc.title}
-                    </h3>
-
-                    <p className="text-xs text-text-dim mb-3">
-                      {doc.page_count} page{doc.page_count !== 1 ? 's' : ''}
-                    </p>
-
-                    {/* Date */}
-                    <p className="text-xs text-text-dim">
-                      {formatDate(doc.created_at)}
-                    </p>
-
-                    {/* Loading Indicator */}
-                    {openingDoc === doc.id && (
-                      <div className="absolute inset-0 bg-white/90 rounded-xl flex items-center justify-center">
-                        <RiLoader4Line className="animate-spin text-primary" size={20} />
+                    {/* Top accent bar — animates when loading */}
+                    {openingDoc === doc.id ? (
+                      <div className="h-1.5 bg-gradient-to-r from-primary via-teal-400 to-primary/50 relative overflow-hidden">
+                        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/60 to-transparent animate-[shimmer_1s_infinite]"
+                          style={{ animation: 'shimmer 1s infinite', backgroundSize: '200% 100%' }} />
                       </div>
+                    ) : (
+                      <div className="h-1.5 bg-gradient-to-r from-primary via-teal-400 to-primary/50" />
                     )}
+
+                    <div className="p-5">
+                      {openingDoc === doc.id ? (
+                        /* Skeleton while loading */
+                        <div className="space-y-3 animate-pulse">
+                          <div className="h-3 w-24 bg-slate-100 rounded-full" />
+                          <div className="h-4 w-3/4 bg-slate-100 rounded-full" />
+                          <div className="space-y-2 pt-1">
+                            <div className="h-3 w-full bg-slate-100 rounded-full" />
+                            <div className="h-3 w-full bg-slate-100 rounded-full" />
+                            <div className="h-3 w-2/3 bg-slate-100 rounded-full" />
+                          </div>
+                          <div className="h-3 w-1/2 bg-slate-100 rounded-full pt-2" />
+                        </div>
+                      ) : (
+                        /* Normal card content */
+                        <>
+                          <p className="text-xs font-semibold text-text-dim uppercase tracking-widest mb-1">
+                            {formatDate(doc.created_at)}
+                          </p>
+                          <h3 className="text-base font-bold text-text-heading mb-3 line-clamp-1 group-hover:text-primary transition-colors">
+                            {doc.title}
+                          </h3>
+                          <p className="text-sm text-text-muted leading-relaxed line-clamp-3 mb-4 min-h-[3.75rem]">
+                            {doc.about || 'Open document to generate AI summary for this paper.'}
+                          </p>
+                          <div className="flex items-center gap-2 pt-3 border-t border-border/50 text-text-dim">
+                            <RiCalendarLine size={15} className="flex-shrink-0" />
+                            <span className="text-xs">{doc.page_count} pages · {formatDate(doc.created_at)}</span>
+                          </div>
+                        </>
+                      )}
+                    </div>
                   </motion.div>
                 ))}
               </div>
 
               {/* Pagination */}
               {pagination && pagination.total_pages > 1 && (
-                <div className="flex items-center justify-center gap-2 pt-6 border-t border-border">
+                <div className="flex items-center justify-center gap-2 pt-6 border-t border-border mb-12">
                   <button
                     onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
                     disabled={currentPage === 1}
@@ -210,6 +251,7 @@ export default function MyDocuments() {
                   </button>
                 </div>
               )}
+
             </>
           )}
         </motion.div>
