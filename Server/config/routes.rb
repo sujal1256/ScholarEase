@@ -4,7 +4,11 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :documents, only: [:index, :create, :show]
+      resources :documents, only: [:index, :create, :show] do
+        member do
+          get 'pdf'
+        end
+      end
 
       resources :sections, only: [:index, :show] do
         # This creates /api/v1/sections/:id/explain and /api/v1/sections/:id/ai_response

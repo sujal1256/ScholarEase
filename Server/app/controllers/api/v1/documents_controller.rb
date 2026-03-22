@@ -19,21 +19,19 @@ class Api::V1::DocumentsController < ApplicationController
       return
     end
 
-    # Create document record with pending status
+    # Save the uploaded file permanently
+    file_path = save_upload_file(params[:file])
+
+    # Create document record with pending status and file path
     @document = Document.create!(
       user: user,
       title: params[:title] || params[:file].original_filename,
+      file_url: file_path,
       status: :pending
     )
 
-    # Save the uploaded file temporarily
-    temp_file_path = save_upload_file(params[:file])
-
     # Parse PDF using Python script
-    sections_data = parse_pdf(temp_file_path)
-
-    # Clean up temp file
-    File.delete(temp_file_path) if File.exist?(temp_file_path)
+    sections_data = parse_pdf(file_path)
 
     if sections_data.is_a?(Array) && !sections_data.empty?
       # Create Section records for each page
@@ -127,8 +125,30 @@ class Api::V1::DocumentsController < ApplicationController
       id: @document.id,
       title: @document.title,
       page_count: @document.page_count,
+      pdf_url: "/api/v1/documents/#{@document.id}/pdf",
       sections: sections
     }
+  end
+
+  # GET /api/v1/documents/:id/pdf
+  def pdf
+    @document = Document.find(params[:id])
+
+    if @document.file_url.blank?
+      render json: { error: 'PDF file not found' }, status: :not_found
+      return
+    end
+
+    file_path = Rails.root.join(@document.file_url)
+
+    unless File.exist?(file_path)
+      render json: { error: 'PDF file not found on server' }, status: :not_found
+      return
+    end
+
+    send_file(file_path, type: 'application/pdf', disposition: 'inline')
+  rescue StandardError => e
+    render json: { error: e.message }, status: :internal_server_error
   end
 
   private

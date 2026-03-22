@@ -6,7 +6,7 @@ import { usePdf } from '../context/PdfContext'
 
 export default function DocumentView() {
   const navigate = useNavigate()
-  const { pdfFile, pdfName, documentId, documentSections } = usePdf()
+  const { pdfFile, pdfName, documentId, documentSections, pdfUrl } = usePdf()
   const [fileUrl, setFileUrl] = useState(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
@@ -22,19 +22,24 @@ export default function DocumentView() {
     }
 
     // Case 2: Coming from documents list with backend-stored document
+    if (pdfUrl) {
+      // Backend provided the PDF URL
+      setFileUrl(pdfUrl)
+      setLoading(false)
+      return
+    }
+
+    // Case 3: documentId exists but no pdfUrl yet - should not happen normally
     if (documentId && documentSections && documentSections.length > 0) {
-      // Document data is already in context from MyDocuments page
-      // We need to create a blob from the first section's content to pass to PdfViewer
-      // Actually, we need the PDF file itself. For now, we'll show the document sections
-      // The PdfViewer will work with what we have
-      setFileUrl('backend') // Special marker that we're loading from backend
+      // This shouldn't happen with new flow, but fallback just in case
+      setFileUrl('backend')
       setLoading(false)
       return
     }
 
     // No document loaded, go back
     navigate('/documents')
-  }, [pdfFile, documentId, documentSections, navigate])
+  }, [pdfFile, documentId, documentSections, pdfUrl, navigate])
 
   if (loading || !fileUrl) {
     return (

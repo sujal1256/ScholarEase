@@ -7,6 +7,7 @@ export function PdfProvider({ children }) {
   const [pdfName, setPdfName] = useState('')
   const [documentId, setDocumentId] = useState(null)
   const [documentSections, setDocumentSections] = useState([])
+  const [pdfUrl, setPdfUrl] = useState(null)
   const [uploadLoading, setUploadLoading] = useState(false)
   const [uploadError, setUploadError] = useState(null)
 
@@ -28,6 +29,10 @@ export function PdfProvider({ children }) {
 
   const setDocSections = useCallback((sections) => {
     setDocumentSections(sections)
+  }, [])
+
+  const setPdfUrlCallback = useCallback((url) => {
+    setPdfUrl(url)
   }, [])
 
   const uploadDocument = useCallback(async (file) => {
@@ -77,8 +82,10 @@ export function PdfProvider({ children }) {
         uploadDocument,
         uploadLoading,
         uploadError,
+        pdfUrl,
         setDocumentId: setDocId,
         setDocumentSections: setDocSections,
+        setPdfUrl: setPdfUrlCallback,
       }}
     >
       {children}
