@@ -7,6 +7,13 @@ Rails.application.routes.draw do
       resources :documents, only: [:index, :create, :show] do
         member do
           get 'pdf'
+          get 'comments'
+        end
+      end
+
+      resources :comments, only: [:create] do
+        member do
+          post 'replies'
         end
       end
 
@@ -20,6 +27,7 @@ Rails.application.routes.draw do
 
       resources :annotations
       resources :ai_responses, only: [:show]
+      resources :selection_explains, only: [:create, :show]
     end
   end
 end

@@ -1,42 +1,47 @@
-import sys
-import textwrap
-import langextract as lx
+import json
+import logging
 import os
+import sys
 
-api_key =  os.getenv("GEMINI_API_KEY")
+sys.path.insert(0, os.path.dirname(__file__))
 
-def explain(text):
-    prompt = textwrap.dedent("""
-        You are an academic tutor. Explain the following section of a research paper 
-        in simple, everyday English. Use analogies to explain complex jargon.
-        Keep the explanation grounded strictly in the provided text.
-    """)
+from llm_client import LLMClient, LLMError
 
-    # LangExtract loves examples (Few-Shot) to stay "on rails"
-    examples = [
-        lx.data.ExampleData(
-            text="The model utilizes a multi-head attention mechanism to weigh input importance.",
-            extractions=[
-                lx.data.Extraction(
-                    extraction_class="explanation",
-                    extraction_text="Imagine a group of experts looking at a sentence. Each expert (head) focuses on a different part—one looks at grammar, another at meaning. They then combine their notes to understand the whole sentence better."
-                )
-            ]
-        )
-    ]
+logger = logging.getLogger("explainer")
 
-    result = lx.extract(
-        text_or_documents=text,
-        prompt_description=prompt,
-        examples=examples,
-        model_id="gemini-2.5-flash", # Best free-tier option
-        api_key=api_key
-    )
 
-    if result.extractions:
-        # Output only the text so Ruby can capture it
-        print(result.extractions[0].extraction_text)
+def explain(text: str) -> dict:
+    """
+    Generate an explanation for the given text and convert it to audio.
+    Returns {"text": str, "audio_path": str | None}
+    """
+    client = LLMClient()
+    explanation = client.explain(text)
+
+    audio_relative_path = None
+    try:
+        import tts
+        abs_path = tts.generate_audio(explanation)
+        # Store path relative to public/ so Rails can build the URL easily
+        audio_relative_path = "audio/" + os.path.basename(abs_path)
+    except Exception as exc:
+        # TTS failure is non-fatal — explanation is still saved
+        logger.warning(json.dumps({"event": "tts_failed", "error": str(exc)[:300]}))
+
+    return {"text": explanation, "audio_path": audio_relative_path}
+
 
 if __name__ == "__main__":
-    if len(sys.argv) > 1:
-        explain(sys.argv[1])
+    if len(sys.argv) < 2:
+        print(json.dumps({"error": "Usage: explainer.py <text>"}), file=sys.stderr)
+        sys.exit(1)
+
+    try:
+        result = explain(sys.argv[1])
+        print(json.dumps(result))
+    except LLMError as exc:
+        print(json.dumps({"error": str(exc), "retryable": exc.retryable}), file=sys.stderr)
+        sys.exit(1)
+    except Exception as exc:
+        print(json.dumps({"error": str(exc), "retryable": False}), file=sys.stderr)
+        sys.exit(1)
