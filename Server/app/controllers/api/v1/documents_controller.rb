@@ -19,19 +19,32 @@ class Api::V1::DocumentsController < ApplicationController
       return
     end
 
-    # Save the uploaded file permanently
+    # Save the uploaded file temporarily
     file_path = save_upload_file(params[:file])
 
-    # Create document record with pending status and file path
+    # Upload to Cloudinary
+    begin
+      cloudinary_response = Cloudinary::Uploader.upload(file_path, resource_type: 'auto')
+      cloud_url = cloudinary_response['secure_url']
+    rescue StandardError => e
+      Rails.logger.error("Cloudinary upload failed: #{e.message}")
+      render json: { error: "Failed to upload to cloud storage. Ensure CLOUDINARY_URL is set." }, status: :unprocessable_entity
+      return
+    end
+
+    # Create document record with pending status and cloud url
     @document = Document.create!(
       user: user,
       title: params[:title] || params[:file].original_filename,
-      file_url: file_path,
+      file_url: cloud_url,
       status: :pending
     )
 
-    # Parse PDF using Python script
+    # Parse PDF using Python script with the local temp file
     sections_data = parse_pdf(file_path)
+
+    # Clean up local file after processing
+    File.delete(file_path) if File.exist?(file_path)
 
     if sections_data.is_a?(Array) && !sections_data.empty?
       # Create Section records for each page
@@ -136,6 +149,11 @@ class Api::V1::DocumentsController < ApplicationController
 
     if @document.file_url.blank?
       render json: { error: 'PDF file not found' }, status: :not_found
+      return
+    end
+
+    if @document.file_url.start_with?('http')
+      redirect_to @document.file_url, allow_other_host: true
       return
     end
 
