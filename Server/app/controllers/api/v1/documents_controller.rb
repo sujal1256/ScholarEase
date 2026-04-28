@@ -96,7 +96,7 @@ class Api::V1::DocumentsController < ApplicationController
     total_count = user.documents.count
     total_pages = (total_count.to_f / per_page).ceil
 
-    documents = user.documents.order(created_at: :desc).offset(offset).limit(per_page)
+    documents = user.documents.not_in_active.order(created_at: :desc).offset(offset).limit(per_page)
 
     docs = documents.map do |doc|
       {

@@ -15,6 +15,7 @@ class Section < ApplicationRecord
   belongs_to :document
   has_many :ai_responses, dependent: :destroy
   has_many :annotations, dependent: :destroy
+  has_many :comments, dependent: :destroy
 
   validates :content, presence: true
 

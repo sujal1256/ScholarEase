@@ -7,8 +7,8 @@ Rails.application.routes.draw do
       resources :documents, only: [:index, :create, :show] do
         member do
           get 'pdf'
-          get 'comments'
         end
+        resources :comments, only: [:index]
       end
 
       resources :comments, only: [:create] do

@@ -15,7 +15,8 @@ class Document < ApplicationRecord
   belongs_to :user
   has_many :sections, dependent: :destroy
   has_many :ai_responses, through: :sections
-  enum status: { pending: 0, processing: 1, completed: 2, failed: 3 }
+  has_many :comments, dependent: :destroy
+  enum status: { pending: 0, processing: 1, completed: 2, failed: 3, in_active: 4}
 
   # Generate a short "about" summary from the first AI simplification
   def derive_about
