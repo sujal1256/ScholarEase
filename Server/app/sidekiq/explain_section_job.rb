@@ -15,7 +15,8 @@ class ExplainSectionJob
     log_stderr(stderr) if stderr.present?
 
     unless status.success? && stdout.strip.present?
-      raise ExplainerError, "Explainer failed (exit #{status.exitstatus}): #{stderr.strip.truncate(500)}"
+      safe_stderr = stderr.encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
+      raise ExplainerError, "Explainer failed (exit #{status.exitstatus}): #{safe_stderr.strip.truncate(500)}"
     end
 
     data = JSON.parse(stdout.strip)
@@ -38,6 +39,7 @@ class ExplainSectionJob
   end
 
   def log_stderr(stderr)
+    stderr = stderr.encode('UTF-8', invalid: :replace, undef: :replace, replace: '?')
     stderr.each_line do |line|
       line = line.strip
       next if line.empty?

@@ -5,14 +5,12 @@ import sys
 import threading
 import time
 import textwrap
-from datetime import datetime, timedelta
+from datetime import datetime
 from enum import Enum
 from typing import Callable, Optional
 
-import langextract as lx
-from google import genai
+from openai import OpenAI
 
-# Log structured JSON to stderr so Ruby captures it cleanly
 _handler = logging.StreamHandler(sys.stderr)
 _handler.setFormatter(logging.Formatter("%(message)s"))
 logger = logging.getLogger("llm_client")
@@ -54,7 +52,7 @@ class _State(Enum):
 
 class CircuitBreaker:
     FAILURE_THRESHOLD = 5
-    RECOVERY_TIMEOUT = 60  # seconds before allowing one probe through
+    RECOVERY_TIMEOUT = 60
 
     def __init__(self, name: str):
         self.name = name
@@ -97,40 +95,33 @@ class CircuitBreaker:
 
 class LLMClient:
     MAX_RETRIES = 5
-    BACKOFF_BASE = 1.0  # seconds; doubles each attempt: 1, 2, 4, 8, 16
+    BACKOFF_BASE = 1.0
 
-    # Class-level so breakers persist across instances within the same process
     _breakers: dict[str, CircuitBreaker] = {}
     _breakers_lock = threading.Lock()
 
-    # Shared prompt and examples — defined once, reused every call
-    PROMPT = textwrap.dedent("""
+    SYSTEM_PROMPT = textwrap.dedent("""
         You are an academic tutor. Explain the following section of a research paper
         in simple, everyday English. Use analogies to explain complex jargon.
         Keep the explanation grounded strictly in the provided text.
+        Respond with only the explanation text, nothing else.
     """).strip()
 
+    # Few-shot examples included as conversation turns
     EXAMPLES = [
-        lx.data.ExampleData(
-            text="The model utilizes a multi-head attention mechanism to weigh input importance.",
-            extractions=[
-                lx.data.Extraction(
-                    extraction_class="explanation",
-                    extraction_text=(
-                        "Imagine a group of experts looking at a sentence. Each expert (head) "
-                        "focuses on a different part — one looks at grammar, another at meaning. "
-                        "They then combine their notes to understand the whole sentence better."
-                    ),
-                )
-            ],
+        (
+            "The model utilizes a multi-head attention mechanism to weigh input importance.",
+            "Imagine a group of experts looking at a sentence. Each expert (head) focuses on a "
+            "different part — one looks at grammar, another at meaning. They then combine their "
+            "notes to understand the whole sentence better.",
         )
     ]
 
     def __init__(self):
-        raw = os.getenv("GEMINI_API_KEY", "")
-        self.api_key = raw.encode("ascii", errors="ignore").decode("ascii").strip()
-        if not self.api_key:
-            raise LLMError("GEMINI_API_KEY is not set", retryable=False)
+        api_key = os.getenv("OPENAI_API_KEY", "").strip()
+        if not api_key:
+            raise LLMError("OPENAI_API_KEY is not set", retryable=False)
+        self.client = OpenAI(api_key=api_key)
 
     @classmethod
     def _breaker(cls, name: str) -> CircuitBreaker:
@@ -144,34 +135,36 @@ class LLMClient:
     # ------------------------------------------------------------------
 
     def explain(self, text: str) -> str:
-        """
-        Explain text using the primary provider (langextract + gemini-2.5-flash),
-        falling back to a direct Gemini call on exhausted retries or open circuit.
-        """
         t0 = time.monotonic()
-        primary = self._breaker("gemini-langextract")
-        fallback = self._breaker("gemini-direct")
+        primary = self._breaker("openai-gpt-4o-mini")
+        fallback = self._breaker("openai-gpt-3.5-turbo")
 
         if primary.is_available():
             try:
-                result, attempts = self._with_retry(self._primary, text, provider="gemini-langextract")
+                result, attempts = self._with_retry(
+                    lambda t: self._chat(t, model="gpt-4o-mini"),
+                    text, provider="openai-gpt-4o-mini",
+                )
                 primary.record_success()
-                _log("llm_success", provider="gemini-langextract",
+                _log("llm_success", provider="openai-gpt-4o-mini",
                      latency_s=round(time.monotonic() - t0, 3), retries=attempts)
                 return result
             except LLMError as exc:
                 primary.record_failure()
                 if not exc.retryable:
                     raise
-                _log("primary_exhausted", error=str(exc)[:300], switching_to="gemini-direct")
+                _log("primary_exhausted", error=str(exc)[:300], switching_to="openai-gpt-3.5-turbo")
         else:
-            _log("circuit_open_skip", provider="gemini-langextract")
+            _log("circuit_open_skip", provider="openai-gpt-4o-mini")
 
         if fallback.is_available():
             try:
-                result, attempts = self._with_retry(self._fallback, text, provider="gemini-direct")
+                result, attempts = self._with_retry(
+                    lambda t: self._chat(t, model="gpt-3.5-turbo"),
+                    text, provider="openai-gpt-3.5-turbo",
+                )
                 fallback.record_success()
-                _log("llm_success", provider="gemini-direct",
+                _log("llm_success", provider="openai-gpt-3.5-turbo",
                      latency_s=round(time.monotonic() - t0, 3), retries=attempts)
                 return result
             except LLMError as exc:
@@ -201,51 +194,44 @@ class LLMClient:
         raise last_exc
 
     # ------------------------------------------------------------------
-    # Providers
+    # Core chat methods
     # ------------------------------------------------------------------
 
-    def _primary(self, text: str) -> str:
-        """langextract structured extraction via gemini-2.5-flash."""
+    def _chat(self, text: str, model: str = "gpt-4o-mini") -> str:
+        """Chat with few-shot examples — used for section explanation."""
         try:
-            result = lx.extract(
-                text_or_documents=text,
-                prompt_description=self.PROMPT,
-                examples=self.EXAMPLES,
-                model_id="gemini-2.5-flash",
-                api_key=self.api_key,
-            )
-            if not result.extractions:
-                raise LLMError("langextract returned no extractions", retryable=False)
-            return result.extractions[0].extraction_text
-        except LLMError:
-            raise
-        except Exception as exc:
-            raise LLMError(str(exc), retryable=_is_retryable(exc)) from exc
+            messages = [{"role": "system", "content": self.SYSTEM_PROMPT}]
+            for user_ex, assistant_ex in self.EXAMPLES:
+                messages.append({"role": "user", "content": user_ex})
+                messages.append({"role": "assistant", "content": assistant_ex})
+            messages.append({"role": "user", "content": text})
 
-    def _fallback(self, text: str) -> str:
-        """Direct google-genai call via gemini-1.5-flash — bypasses langextract overhead."""
-        try:
-            client = genai.Client(api_key=self.api_key)
-            full_prompt = f"{self.PROMPT}\n\nText:\n{text}"
-            response = client.models.generate_content(
-                model="gemini-1.5-flash",
-                contents=full_prompt,
+            response = self.client.chat.completions.create(
+                model=model,
+                messages=messages,
+                temperature=0.3,
             )
-            output = (response.text or "").strip()
+            output = (response.choices[0].message.content or "").strip()
             if not output:
-                raise LLMError("Fallback returned empty response", retryable=False)
+                raise LLMError("Empty response from model", retryable=False)
             return output
         except LLMError:
             raise
         except Exception as exc:
             raise LLMError(str(exc), retryable=_is_retryable(exc)) from exc
 
-    def _direct_generate(self, prompt: str, model: str = "gemini-2.5-flash") -> str:
-        """Raw generate_content call — used when we own the full prompt."""
+    def _chat_raw(self, user_message: str, system: str, model: str = "gpt-4o-mini") -> str:
+        """Simple single-turn chat with a custom system prompt."""
         try:
-            client = genai.Client(api_key=self.api_key)
-            response = client.models.generate_content(model=model, contents=prompt)
-            output = (response.text or "").strip()
+            response = self.client.chat.completions.create(
+                model=model,
+                messages=[
+                    {"role": "system", "content": system},
+                    {"role": "user", "content": user_message},
+                ],
+                temperature=0.3,
+            )
+            output = (response.choices[0].message.content or "").strip()
             if not output:
                 raise LLMError("Empty response from model", retryable=False)
             return output
@@ -255,17 +241,11 @@ class LLMClient:
             raise LLMError(str(exc), retryable=_is_retryable(exc)) from exc
 
     # ------------------------------------------------------------------
-    # Selection explain — custom prompt, direct API (no langextract)
+    # Selection explain
     # ------------------------------------------------------------------
 
     _SELECTION_PROMPT = textwrap.dedent("""
         You are an academic reading assistant. Explain the selected text in simple, clear terms.
-
-        Selected text:
-        "{selected_text}"
-
-        Context from the document:
-        "{context}"
 
         Instructions:
         - Use the context to improve your explanation
@@ -276,43 +256,42 @@ class LLMClient:
     """).strip()
 
     def explain_selection(self, selected_text: str, context: str) -> str:
-        """Explain a user-selected text snippet using surrounding document context."""
         if not selected_text.strip():
             raise LLMError("Selected text is empty", retryable=False)
 
-        prompt = self._SELECTION_PROMPT.format(
-            selected_text=selected_text.strip(),
-            context=context.strip(),
+        user_message = (
+            f"Selected text:\n\"{selected_text.strip()}\"\n\n"
+            f"Context from the document:\n\"{context.strip()}\""
         )
 
         t0 = time.monotonic()
-        primary = self._breaker("gemini-direct-selection")
-        fallback = self._breaker("gemini-direct-selection-fallback")
+        primary = self._breaker("openai-selection-primary")
+        fallback = self._breaker("openai-selection-fallback")
 
         if primary.is_available():
             try:
                 result, attempts = self._with_retry(
-                    lambda p: self._direct_generate(p, model="gemini-2.5-flash"),
-                    prompt, provider="gemini-direct-selection",
+                    lambda t: self._chat_raw(t, system=self._SELECTION_PROMPT, model="gpt-4o-mini"),
+                    user_message, provider="openai-selection-primary",
                 )
                 primary.record_success()
-                _log("llm_success", provider="gemini-direct-selection",
+                _log("llm_success", provider="openai-selection-primary",
                      latency_s=round(time.monotonic() - t0, 3), retries=attempts)
                 return result
             except LLMError as exc:
                 primary.record_failure()
                 if not exc.retryable:
                     raise
-                _log("primary_exhausted", error=str(exc)[:300], switching_to="gemini-direct-selection-fallback")
+                _log("primary_exhausted", error=str(exc)[:300], switching_to="openai-selection-fallback")
 
         if fallback.is_available():
             try:
                 result, attempts = self._with_retry(
-                    lambda p: self._direct_generate(p, model="gemini-1.5-flash"),
-                    prompt, provider="gemini-direct-selection-fallback",
+                    lambda t: self._chat_raw(t, system=self._SELECTION_PROMPT, model="gpt-3.5-turbo"),
+                    user_message, provider="openai-selection-fallback",
                 )
                 fallback.record_success()
-                _log("llm_success", provider="gemini-direct-selection-fallback",
+                _log("llm_success", provider="openai-selection-fallback",
                      latency_s=round(time.monotonic() - t0, 3), retries=attempts)
                 return result
             except LLMError as exc:

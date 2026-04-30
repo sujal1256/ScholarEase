@@ -9,7 +9,7 @@ An AI-powered research paper workspace that turns static PDFs into interactive l
 1. **Upload** — Drop a PDF research paper into the platform.
 2. **Parse** — A Python script extracts text from each page and saves it as `Section` records in the database.
 3. **View** — A built-in PDF viewer renders the document with zoom and page navigation.
-4. **Simplify** — Click any section to trigger an AI explanation job (via Google Gemini). A background worker processes it and stores the result.
+4. **Simplify** — Click any section to trigger an AI explanation job (via OpenAI). A background worker processes it and stores the result.
 5. **Annotate** — Attach notes and highlights to specific sections (backend ready, UI in progress).
 6. **My Documents** — Browse all previously uploaded papers with pagination.
 
@@ -23,7 +23,7 @@ An AI-powered research paper workspace that turns static PDFs into interactive l
 | Backend | Ruby on Rails 7.1 (API mode), Puma, Rack-CORS |
 | Database | PostgreSQL |
 | Job Queue | Sidekiq + Redis |
-| AI / Parsing | Python 3, pypdf, LangExtract, Google Gemini 2.5 Flash |
+| AI / Parsing | Python 3, pypdf, LangExtract, OpenAI GPT-4o-mini |
 
 ---
 
@@ -44,7 +44,7 @@ ScholarEase/
     │   └── sidekiq/              # ExplainSectionJob — background AI worker
     ├── lib/ai/
     │   ├── pdf_parser.py         # Extracts text per page from uploaded PDFs
-    │   └── explainer.py          # Calls Gemini API to simplify text
+    │   └── explainer.py          # Calls OpenAI API to simplify text
     └── db/
         ├── schema.rb
         └── migrate/
@@ -91,7 +91,7 @@ bundle install
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate   # On Windows: .venv\Scripts\activate
-pip install pypdf langextract
+pip install pypdf langextract openai
 ```
 
 **Configure environment variables:**
@@ -101,7 +101,7 @@ Create a `.env` file in the `Server/` directory:
 ```env
 DATABASE_URL=postgresql://username:password@localhost:5432/scholar_ease_development
 REDIS_URL=redis://localhost:6379/1
-GEMINI_API_KEY=your_google_gemini_api_key_here
+OPENAI_API_KEY=your_openai_api_key_here
 ```
 
 **Create and migrate the database:**
@@ -185,7 +185,7 @@ POST /api/v1/sections/:id/explain
 Sidekiq worker picks up the job
        |
        |-- Calls explainer.py with the section text
-       |-- explainer.py sends request to Google Gemini API
+       |-- explainer.py sends request to OpenAI API (GPT-4o-mini)
        |-- Saves result to AiResponse record
        |
        v
