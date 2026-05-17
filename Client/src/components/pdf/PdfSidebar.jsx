@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react'
+import { apiUrl } from '../../utils/api'
 import {
   RiSparkling2Line,
   RiChat3Line,
@@ -81,7 +82,7 @@ function CommentCard({ comment, onReplyAdded, onTextClick }) {
     if (!replyText.trim()) return
     setSubmitting(true)
     try {
-      const res = await fetch(`/api/v1/comments/${comment.id}/replies`, {
+      const res = await fetch(apiUrl(`/api/v1/comments/${comment.id}/replies`), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ content: replyText.trim(), comment_type: 'user' }),
@@ -242,7 +243,7 @@ export default function PdfSidebar({ currentPage, comments = [], onReplyAdded, o
 
   const fetchAiResponse = async (sectionId) => {
     try {
-      const response = await fetch(`/api/v1/sections/${sectionId}/ai_response`)
+      const response = await fetch(apiUrl(`/api/v1/sections/${sectionId}/ai_response`))
       if (response.ok) {
         const data = await response.json()
         if (data.status === 'completed') {
@@ -260,7 +261,7 @@ export default function PdfSidebar({ currentPage, comments = [], onReplyAdded, o
     if (!currentSection) return
     setSimplifying(true)
     try {
-      const response = await fetch(`/api/v1/sections/${currentSection.id}/explain`, { method: 'POST' })
+      const response = await fetch(apiUrl(`/api/v1/sections/${currentSection.id}/explain`), { method: 'POST' })
       if (response.ok) {
         const data = await response.json()
         if (data.status === 'completed') {

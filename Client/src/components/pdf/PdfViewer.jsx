@@ -1,4 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
+import { apiUrl } from '../../utils/api'
 import { Document, Page, pdfjs } from 'react-pdf'
 import 'react-pdf/dist/Page/AnnotationLayer.css'
 import 'react-pdf/dist/Page/TextLayer.css'
@@ -73,7 +74,7 @@ export default function PdfViewer({ file, fileName, showSidebar = true }) {
   // Fetch all comments for this document
   useEffect(() => {
     if (!documentId) return
-    fetch(`/api/v1/documents/${documentId}/comments`)
+    fetch(apiUrl(`/api/v1/documents/${documentId}/comments`))
       .then((r) => r.ok ? r.json() : [])
       .then(setComments)
       .catch(() => {})

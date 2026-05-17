@@ -1,4 +1,5 @@
 import { useNavigate, Link } from 'react-router-dom'
+import { apiUrl } from '../utils/api'
 import { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { RiFilePdfLine, RiLoader4Line, RiCalendarLine } from 'react-icons/ri'
@@ -22,7 +23,7 @@ export default function MyDocuments() {
     setLoading(true)
     setError(null)
     try {
-      const response = await fetch(`/api/v1/documents?page=${page}&per_page=6`)
+      const response = await fetch(apiUrl(`/api/v1/documents?page=${page}&per_page=6`))
       if (!response.ok) throw new Error('Failed to fetch documents')
       const data = await response.json()
       setDocuments(data.documents)
@@ -37,7 +38,7 @@ export default function MyDocuments() {
   const handleOpenDocument = async (docId) => {
     setOpeningDoc(docId)
     try {
-      const response = await fetch(`/api/v1/documents/${docId}`)
+      const response = await fetch(apiUrl(`/api/v1/documents/${docId}`))
       if (!response.ok) throw new Error('Failed to load document')
       const data = await response.json()
       setDocumentId(data.id)

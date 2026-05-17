@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useCallback } from 'react'
+import { apiUrl } from '../utils/api'
 
 const PdfContext = createContext(null)
 
@@ -49,7 +50,7 @@ export function PdfProvider({ children }) {
       formData.append('file', file)
       formData.append('title', file.name)
 
-      const response = await fetch('/api/v1/documents', {
+      const response = await fetch(apiUrl('/api/v1/documents'), {
         method: 'POST',
         body: formData,
       })

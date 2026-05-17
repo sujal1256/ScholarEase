@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import { apiUrl } from '../../utils/api'
 import { createPortal } from 'react-dom'
 import { RiSparkling2Line, RiCloseLine, RiChat3Line, RiCheckLine } from 'react-icons/ri'
 
@@ -42,7 +43,7 @@ export default function SelectionTooltip({
     setErrorMsg('')
 
     try {
-      const res = await fetch('/api/v1/selection_explains', {
+      const res = await fetch(apiUrl('/api/v1/selection_explains'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ selected_text: selectedText, document_id: documentId, section_id: sectionId }),
@@ -57,7 +58,7 @@ export default function SelectionTooltip({
       pollRef.current = setInterval(async () => {
         attempts++
         try {
-          const poll = await fetch(`/api/v1/selection_explains/${data.id}`)
+          const poll = await fetch(apiUrl(`/api/v1/selection_explains/${data.id}`))
           const result = await poll.json()
           if (result.status === 'completed') {
             clearInterval(pollRef.current)
@@ -82,7 +83,7 @@ export default function SelectionTooltip({
     setSubmitting(true)
 
     try {
-      const res = await fetch('/api/v1/comments', {
+      const res = await fetch(apiUrl('/api/v1/comments'), {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
