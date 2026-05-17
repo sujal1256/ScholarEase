@@ -29,7 +29,7 @@ class Api::V1::SelectionExplainsController < ApplicationController
       r.status        = 'pending'
     end
 
-    ExplainSelectionJob.perform_async(record.id, section_id) if record.status == 'pending'
+    ExplainSelectionJob.new.perform(record.id, section_id) if record.status == 'pending'
 
     render json: serialise(record), status: :accepted
   end

@@ -7,10 +7,10 @@ class Api::V1::SectionsController < ApplicationController
 
     if existing_response
       # If audio failed on the original run, retry it in the background
-      AudioRetryJob.perform_async(existing_response.id) if existing_response.audio_path.blank?
+      AudioRetryJob.new.perform(existing_response.id) if existing_response.audio_path.blank?
       render json: ai_response_payload(existing_response)
     else
-      ExplainSectionJob.perform_async(@section.id)
+      ExplainSectionJob.new.perform(@section.id)
       render json: { status: 'processing', message: 'AI is thinking...' }, status: :accepted
     end
   end
@@ -20,7 +20,7 @@ class Api::V1::SectionsController < ApplicationController
     existing_response = AiResponse.find_by(section: @section, intent: 'simplify')
 
     if existing_response
-      AudioRetryJob.perform_async(existing_response.id) if existing_response.audio_path.blank?
+      AudioRetryJob.new.perform(existing_response.id) if existing_response.audio_path.blank?
       render json: ai_response_payload(existing_response)
     else
       render json: { status: 'pending', message: 'No AI response yet' }
