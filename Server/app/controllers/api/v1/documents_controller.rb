@@ -138,7 +138,7 @@ class Api::V1::DocumentsController < ApplicationController
       id: @document.id,
       title: @document.title,
       page_count: @document.page_count,
-      pdf_url: "/api/v1/documents/#{@document.id}/pdf",
+      pdf_url: @document.file_url,
       sections: sections
     }
   end
