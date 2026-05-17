@@ -11,7 +11,7 @@ class AudioRetryJob
     return unless response
     return if response.audio_path.present? # already filled by another worker
 
-    python_bin  = Rails.root.join('.venv', 'bin', 'python3').to_s
+    python_bin  = 'python3'
     script_path = Rails.root.join('lib', 'ai', 'generate_audio.py').to_s
 
     stdout, _stderr, status = Open3.capture3(

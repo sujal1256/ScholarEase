@@ -189,7 +189,7 @@ class Api::V1::DocumentsController < ApplicationController
   end
 
   def parse_pdf(file_path)
-    python_bin = Rails.root.join('.venv', 'bin', 'python3').to_s
+    python_bin = 'python3'
     script_path = Rails.root.join('lib', 'ai', 'pdf_parser.py').to_s
 
     stdout, stderr, status = Open3.capture3(python_bin, script_path, file_path)

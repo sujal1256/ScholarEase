@@ -50,7 +50,7 @@ class ExplainSelectionJob
   end
 
   def run_explainer(selected_text, context)
-    python_bin  = Rails.root.join('.venv', 'bin', 'python3').to_s
+    python_bin  = 'python3'
     script_path = Rails.root.join('lib', 'ai', 'selection_explainer.py').to_s
     input       = JSON.generate({ selected_text: selected_text, context: context })
 

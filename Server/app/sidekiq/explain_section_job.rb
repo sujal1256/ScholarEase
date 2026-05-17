@@ -28,7 +28,7 @@ class ExplainSectionJob
   private
 
   def run_explainer(section)
-    python_bin  = Rails.root.join('.venv', 'bin', 'python3').to_s
+    python_bin  = 'python3'
     script_path = Rails.root.join('lib', 'ai', 'explainer.py').to_s
 
     Timeout.timeout(PYTHON_TIMEOUT) do
