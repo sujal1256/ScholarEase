@@ -3,7 +3,6 @@ import { apiUrl } from '../../utils/api'
 import {
   RiSparkling2Line,
   RiChat3Line,
-  RiTranslate2,
   RiVolumeUpLine,
   RiPauseLine,
   RiPlayLine,
@@ -15,7 +14,6 @@ import { usePdf } from '../../context/PdfContext'
 const tabs = [
   { id: 'ai',       label: 'AI Simplify', icon: RiSparkling2Line },
   { id: 'comments', label: 'Comments',    icon: RiChat3Line      },
-  { id: 'translate',label: 'Translate',   icon: RiTranslate2     },
 ]
 
 // ─── AudioPlayer ─────────────────────────────────────────────────────────────
@@ -385,14 +383,6 @@ export default function PdfSidebar({ currentPage, comments = [], onReplyAdded, o
             onReplyAdded={onReplyAdded}
             onTextClick={onCommentTextClick}
           />
-        )}
-
-        {activeTab === 'translate' && (
-          <div className="text-center py-12">
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4"><RiTranslate2 size={24} className="text-primary" /></div>
-            <p className="text-sm font-semibold text-text-heading mb-1">Translation</p>
-            <p className="text-xs text-text-dim leading-relaxed">Translate the document or selected sections into your preferred language.</p>
-          </div>
         )}
 
 
